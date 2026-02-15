@@ -8,10 +8,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 await auth.init({
-    dbURI: "mongodb://127.0.0.1:27017/proauth-test",
-    jwtSecret: "dev-secret",
-    appUrl: "http://localhost:4000",
-
     customSchema: {
         name: {
             type: String,

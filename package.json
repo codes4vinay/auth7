@@ -1,16 +1,22 @@
 {
-  "name": "pro-auth-kit",
+  "name": "auth7-kit",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Authentication system for Node.js and Express",
+  "main": "src/index.js",
+  "type": "module",
+  "keywords": [
+    "auth",
+    "jwt",
+    "express",
+    "authentication",
+    "nodejs"
+  ],
+  "author": "Vinay Kumar",
+  "license": "MIT",
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon dev.js"
   },
-  "keywords": [],
-  "author": "Vinay Kumar",
-  "license": "ISC",
-  "type": "module",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",

@@ -1,6 +1,6 @@
 {
   "name": "auth7",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Plug-and-play authentication system for Express and MongoDB",
   "main": "src/index.js",
   "exports": {

@@ -5,43 +5,52 @@ import { protect } from "./middleware/auth.middleware.js";
 
 let User = null;
 let config = null;
+let initialized = false;
 
 /* INIT */
 export const init = async (options = {}) => {
 
+    if (initialized) {
+        throw new Error("Auth7 already initialized");
+    }
+
     if (!options.dbURI) {
-        throw new Error("MongoDB URI missing");
+        throw new Error("Auth7: MongoDB URI missing");
     }
 
     if (!options.jwtSecret) {
-        throw new Error("JWT secret missing");
+        throw new Error("Auth7: JWT secret missing");
     }
 
-    config = {
+    config = Object.freeze({
         dbURI: options.dbURI,
         jwtSecret: options.jwtSecret,
         accessTokenExpiry: options.accessTokenExpiry || "15m",
-        appUrl: options.appUrl
-    };
+        appUrl: options.appUrl || "http://localhost:3000"
+    });
 
     await connectDB(config.dbURI);
 
     User = createUserModel(options.customSchema || {});
+
+    initialized = true;
 };
 
 /* ROUTES */
 export const routes = () => {
-    if (!User || !config) {
-        throw new Error("Call init() first");
+
+    if (!initialized) {
+        throw new Error("Auth7: Call init() before using routes()");
     }
 
     return authRoutes(User, config);
 };
 
-/* MIDDLEWARE */
+/* PROTECT MIDDLEWARE */
 export const protectRoute = () => {
-    if (!config) {
-        throw new Error("Call init() first");
+
+    if (!initialized) {
+        throw new Error("Auth7: Call init() before using protect()");
     }
 
     return protect(config);

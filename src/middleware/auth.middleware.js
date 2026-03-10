@@ -1,29 +1,43 @@
-import jwt from "jsonwebtoken";
-
 export const protect = (config) => {
 
-    return (req, res, next) => {
+    return (requiredRole = null) => {
 
-        try {
+        return (req, res, next) => {
 
-            const token = req.cookies?.access_token;
+            try {
 
-            if (!token)
-                return res.status(401).json({ msg: "Login required" });
+                const token = req.cookies?.access_token;
 
-            const decoded = jwt.verify(token, config.jwtSecret, {
-                issuer: "auth7-kit"
-            });
+                if (!token) {
+                    return res.status(401).json({
+                        success: false,
+                        message: "Auth7 :: Login required"
+                    });
+                }
 
-            req.user = {
-                id: decoded.sub,
-                role: decoded.role
-            };
+                const decoded = jwt.verify(token, config.jwtSecret);
 
-            next();
+                req.user = {
+                    id: decoded.sub,
+                    role: decoded.role
+                };
 
-        } catch {
-            return res.status(401).json({ msg: "Invalid or expired session" });
-        }
+                if (requiredRole && decoded.role !== requiredRole) {
+                    return res.status(403).json({
+                        success: false,
+                        message: "Auth7 :: Access denied"
+                    });
+                }
+
+                next();
+
+            } catch {
+
+                return res.status(401).json({
+                    success: false,
+                    message: "Auth7 :: Invalid session"
+                });
+            }
+        };
     };
 };

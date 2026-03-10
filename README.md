@@ -1,46 +1,58 @@
-# Auth7 Kit 
+# Auth7
 
-A authentication system for Node.js and Express.
+A **plug-and-play authentication system for Node.js and Express**.
 
-Built with security, scalability, and flexibility in mind.
+Auth7 provides a secure, flexible authentication solution with **JWT sessions, refresh tokens, email verification, password reset, and extensible user schemas**.
+
+Built with **security, scalability, and developer experience in mind**.
+
+---
+
+## 🔗 Links
+
+* 🌐 **Portfolio:** https://vinaydev.in
+* 📦 **GitHub Repository:** https://github.com/codes4vinay/auth7
+* 📘 **Documentation:** https://vkprojects.us.cc/
 
 ---
 
 ## ✨ Features
 
-- Cookie-based JWT authentication
-- Access & Refresh tokens
-- Email verification (Dev mode + SMTP support)
-- Password reset system
-- Session invalidation
-- Custom user schema support
-- Plugin-style architecture
-- Rate-limit ready
+* Cookie-based **JWT authentication**
+* **Access & Refresh tokens**
+* **Email verification** (Dev mode + SMTP support)
+* **Password reset system**
+* **Session invalidation**
+* **Custom user schema support**
+* **Plugin-style architecture**
+* **Rate-limit ready**
+* Secure password hashing with **bcrypt**
+* Built-in **token expiry enforcement**
 
 ---
 
-## 📦 Installation
+# 📦 Installation
 
 ```bash
-npm install auth7-kit
+npm install auth7
 ```
 
-Or for local development:
+For local development:
 
 ```bash
-npm install ../auth7-kit
+npm install ../auth7
 ```
 
 ---
 
-##  Quick Start
+# 🚀 Quick Start
 
-### 1️⃣ Setup Express App
+## 1️⃣ Setup Express App
 
-```js
+```javascript
 import express from "express";
 import cookieParser from "cookie-parser";
-import auth from "auth7-kit";
+import auth from "auth7";
 
 const app = express();
 
@@ -50,15 +62,14 @@ app.use(cookieParser());
 
 ---
 
-### 2️⃣ Initialize Auth
+## 2️⃣ Initialize Auth
 
-```js
+```javascript
 await auth.init({
   dbURI: "mongodb://127.0.0.1:27017/mydb",
   jwtSecret: "my-secret-key",
   appUrl: "http://localhost:4000",
 
-  // Optional custom fields
   customSchema: {
     name: {
       type: String,
@@ -72,17 +83,17 @@ await auth.init({
 
 ---
 
-### 3️⃣ Mount Routes
+## 3️⃣ Mount Authentication Routes
 
-```js
+```javascript
 app.use("/auth", auth.routes());
 ```
 
 ---
 
-### 4️⃣ Protected Route Example
+## 4️⃣ Protect Routes
 
-```js
+```javascript
 app.get("/profile", auth.protect(), (req, res) => {
   res.json({
     user: req.user
@@ -92,9 +103,9 @@ app.get("/profile", auth.protect(), (req, res) => {
 
 ---
 
-### 5️⃣ Start Server
+## 5️⃣ Start Server
 
-```js
+```javascript
 app.listen(4000, () => {
   console.log("Server running on port 4000");
 });
@@ -102,7 +113,7 @@ app.listen(4000, () => {
 
 ---
 
-## 🔐 Authentication Flow
+# 🔐 Authentication Flow
 
 ### Register
 
@@ -110,7 +121,7 @@ app.listen(4000, () => {
 POST /auth/register
 ```
 
-Creates an unverified user and prints verification link in dev mode.
+Creates an unverified user and sends a verification link.
 
 ---
 
@@ -132,8 +143,37 @@ POST /auth/login
 
 Sets cookies:
 
-- access_token (15 min)
-- refresh_token (7 days)
+* **access_token** (15 minutes)
+* **refresh_token** (7 days)
+
+Authentication lifecycle:
+
+```
+User Login
+   │
+   ▼
+Server issues:
+Access Token (15m)
+Refresh Token (7d)
+   │
+   ▼
+Client requests API
+   │
+   ▼
+Access Token Valid → allow
+   │
+   ▼
+Access Token Expired
+   │
+   ▼
+Client calls /refresh
+   │
+   ▼
+Refresh Token Valid
+   │
+   ▼
+Server issues new Access Token
+```
 
 ---
 
@@ -143,7 +183,7 @@ Sets cookies:
 POST /auth/refresh
 ```
 
-Issues a new access token.
+Issues a new access token using a valid refresh token.
 
 ---
 
@@ -153,17 +193,19 @@ Issues a new access token.
 POST /auth/logout
 ```
 
-Clears cookies and revokes session.
+Clears cookies and invalidates the session.
 
 ---
 
-## 🔁 Password Reset
+# 🔁 Password Reset
 
-### Request Reset
+### Request Password Reset
 
 ```
 POST /auth/forgot-password
 ```
+
+Sends a reset link if the account exists.
 
 ---
 
@@ -182,17 +224,17 @@ Request Body:
 }
 ```
 
-All active sessions are revoked after reset.
+All active sessions are revoked after password reset.
 
 ---
 
-## 📧 Email System
+# 📧 Email System
 
-### Development Mode (Default)
+## Development Mode
 
-If SMTP is not configured, verification and reset links are printed in terminal.
+If SMTP is not configured, verification and reset links are printed in the terminal.
 
-Example:
+Example output:
 
 ```
 📧 DEV MAIL
@@ -201,11 +243,11 @@ http://localhost:4000/auth/verify?token=xxxx
 
 ---
 
-### Production Mode (SMTP)
+## Production Mode (SMTP)
 
 Provide SMTP configuration:
 
-```js
+```javascript
 await auth.init({
   smtpHost: "smtp.gmail.com",
   smtpPort: 587,
@@ -217,11 +259,11 @@ await auth.init({
 
 ---
 
-## 👤 Custom User Schema
+# 👤 Custom User Schema
 
 Extend the user model easily:
 
-```js
+```javascript
 customSchema: {
   phone: String,
   address: String,
@@ -229,70 +271,71 @@ customSchema: {
 }
 ```
 
-These fields are saved automatically during registration.
+These fields will be stored automatically during registration.
 
 ---
 
-## 🛡 Security
+# 🛡 Security Features
 
-- HttpOnly cookies
-- JWT issuer validation
-- Password hashing (bcrypt)
-- Refresh token storage
-- Session revocation
-- Token expiry enforcement
-
----
-
-## 📚 API Reference
-
-| Method | Route | Description |
-|--------|-------|-------------|
-| POST | /auth/register | Register user |
-| POST | /auth/login | Login |
-| GET | /auth/verify | Verify email |
-| POST | /auth/refresh | Refresh token |
-| POST | /auth/logout | Logout |
-| POST | /auth/forgot-password | Forgot password |
-| POST | /auth/reset-password | Reset password |
+* **HttpOnly cookies**
+* **JWT issuer validation**
+* **Password hashing (bcrypt)**
+* **Refresh token storage**
+* **Session revocation**
+* **Token expiry enforcement**
+* **Rate limit ready**
 
 ---
 
-## ⚙ Configuration Options
+# 📚 API Reference
 
-| Option | Required | Description |
-|--------|----------|-------------|
-| dbURI | ✅ | MongoDB connection string |
-| jwtSecret | ✅ | JWT secret key |
-| appUrl | ✅ | Base app URL |
-| customSchema | ❌ | Extra user fields |
-| smtpHost | ❌ | SMTP host |
-| smtpPort | ❌ | SMTP port |
-| smtpUser | ❌ | SMTP username |
-| smtpPass | ❌ | SMTP password |
-| smtpFrom | ❌ | Sender address |
+| Method | Route                 | Description            |
+| ------ | --------------------- | ---------------------- |
+| POST   | /auth/register        | Register user          |
+| POST   | /auth/login           | Login                  |
+| GET    | /auth/verify          | Verify email           |
+| POST   | /auth/refresh         | Refresh token          |
+| POST   | /auth/logout          | Logout                 |
+| POST   | /auth/forgot-password | Request password reset |
+| POST   | /auth/reset-password  | Reset password         |
 
 ---
 
-## 🛣 Roadmap
+# ⚙ Configuration Options
 
-Planned features:
-
-- User profile update
-- Change email with re-verification
-- Advanced rate limiting
-- Refresh token rotation
-- Role-based access control
-- Redis session support
+| Option       | Required | Description               |
+| ------------ | -------- | ------------------------- |
+| dbURI        | ✅        | MongoDB connection string |
+| jwtSecret    | ✅        | JWT secret key            |
+| appUrl       | ✅        | Base application URL      |
+| customSchema | ❌        | Extend user model         |
+| smtpHost     | ❌        | SMTP host                 |
+| smtpPort     | ❌        | SMTP port                 |
+| smtpUser     | ❌        | SMTP username             |
+| smtpPass     | ❌        | SMTP password             |
+| smtpFrom     | ❌        | Sender email              |
 
 ---
 
-## 🤝 Contributing
+# 🛣 Roadmap
 
-Pull requests are welcome.
+Planned improvements:
 
-```bash
-git fork
+* User profile update
+* Email change with re-verification
+* Advanced rate limiting
+* Refresh token rotation
+* Role-based access control
+* Redis session support
+
+---
+
+# 🤝 Contributing
+
+Contributions are welcome.
+
+```
+fork repository
 git clone
 npm install
 npm run dev
@@ -300,18 +343,22 @@ npm run dev
 
 ---
 
-## 📜 License
+# 📜 License
 
 MIT License
 
 ---
 
-## 👨‍💻 Author
+# 👨‍💻 Author
 
-Vinay Kumar
+**Vinay Kumar**
+
+Portfolio: https://vinaydev.in
 
 ---
 
-## ⭐ Support
+# ⭐ Support
 
-If you find this project useful, please give it a star ⭐ on GitHub.
+If you find this project useful, please give it a **star ⭐ on GitHub**.
+
+https://github.com/codes4vinay/auth7

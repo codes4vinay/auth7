@@ -3,7 +3,7 @@ let UserModel = null;
 
 export const createUserModel = (customFields = {}) => {
 
-    if (UserModel) return UserModel; // Prevent recompile
+    if (UserModel) return UserModel;
 
     /* baseSchema */
     const baseSchema = {

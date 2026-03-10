@@ -1,43 +1,42 @@
-export const protect = (config) => {
+import jwt from "jsonwebtoken";
 
-    return (requiredRole = null) => {
+export const protect = (config, requiredRole = null) => {
 
-        return (req, res, next) => {
+    return (req, res, next) => {
 
-            try {
+        try {
 
-                const token = req.cookies?.access_token;
+            const token = req.cookies?.access_token;
 
-                if (!token) {
-                    return res.status(401).json({
-                        success: false,
-                        message: "Auth7 :: Login required"
-                    });
-                }
-
-                const decoded = jwt.verify(token, config.jwtSecret);
-
-                req.user = {
-                    id: decoded.sub,
-                    role: decoded.role
-                };
-
-                if (requiredRole && decoded.role !== requiredRole) {
-                    return res.status(403).json({
-                        success: false,
-                        message: "Auth7 :: Access denied"
-                    });
-                }
-
-                next();
-
-            } catch {
-
+            if (!token) {
                 return res.status(401).json({
                     success: false,
-                    message: "Auth7 :: Invalid session"
+                    message: "Auth7 :: Login required"
                 });
             }
-        };
+
+            const decoded = jwt.verify(token, config.jwtSecret);
+
+            req.user = {
+                id: decoded.sub,
+                role: decoded.role
+            };
+
+            if (requiredRole && decoded.role !== requiredRole) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Auth7 :: Access denied"
+                });
+            }
+
+            next();
+
+        } catch {
+
+            return res.status(401).json({
+                success: false,
+                message: "Auth7 :: Invalid session"
+            });
+        }
     };
 };

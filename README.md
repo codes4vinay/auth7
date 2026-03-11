@@ -34,7 +34,7 @@ Built with **security, scalability, and developer experience in mind**.
 # 📦 Installation
 
 ```bash
-npm install auth7
+npm install auth7-kit
 ```
 
 For local development:
@@ -52,7 +52,7 @@ npm install ../auth7
 ```javascript
 import express from "express";
 import cookieParser from "cookie-parser";
-import auth from "auth7";
+import auth from "auth7-kit";
 
 const app = express();
 
